@@ -14,11 +14,13 @@ on:
     outputs:
       matrix:
         description: "Generated matrix JSON"
-        value: ${{ steps.generate-matrix.outputs.matrix }}
+        value: ${{ jobs.generate.outputs.matrix }}
 
 jobs:
-  matrix:
+  generate:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.generate-matrix.outputs.matrix }}  #
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
