@@ -42,8 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       max-parallel: 1
-      matrix:
-        include: ${{ fromJson(needs.matrix.outputs.matrix).infra }}
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix).infra }}
     environment: "${{matrix.workspace}}-${{matrix.region}}-${{matrix.cluster}}"
     env:
       TF_WORKSPACE: "${{matrix.workspace}}-${{matrix.region}}-${{matrix.cluster}}"

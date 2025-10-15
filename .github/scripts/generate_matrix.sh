@@ -38,18 +38,18 @@ for paths in "${INPUT_LIST[@]}"; do
 
       # Initialize array for this workdir if not exists
       if ! echo "$OUTPUT" | jq -e ".\"$workdir\"" >/dev/null 2>&1; then
-        OUTPUT=$(echo "$OUTPUT" | jq ".\"$workdir\" = []")
+        OUTPUT=$(echo "$OUTPUT" | jq ".\"$workdir\" = {\"include\": []}")
       fi
 
-      # Append the workspace/region/cluster object to the array for this workdir
+      # Append the object to the include array
       OUTPUT=$(echo "$OUTPUT" | jq --arg workspace "$workspace" --arg region "$region" --arg cluster "$cluster" --arg workdir "$workdir" \
-        ".\"$workdir\" += [{\"workspace\": \$workspace, \"region\": \$region, \"cluster\": \$cluster, \"workdir\": \$workdir}]")
+        ".\"$workdir\".include += [{\"workspace\": \$workspace, \"region\": \$region, \"cluster\": \$cluster, \"workdir\": \$workdir}]")
     done
   done
 done
 
-# Remove duplicates inside each array
-OUTPUT=$(echo "$OUTPUT" | jq -c 'to_entries | map(.value |= unique) | from_entries')
+# Deduplicate each include array
+OUTPUT=$(echo "$OUTPUT" | jq -c 'to_entries | map(.value.include |= unique) | from_entries')
 
 # Print final JSON
 echo "$OUTPUT"
