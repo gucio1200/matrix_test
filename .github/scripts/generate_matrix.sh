@@ -43,7 +43,7 @@ for paths in "${INPUT_LIST[@]}"; do
 
       # Append the workspace/region/cluster object to the array for this workdir
       OUTPUT=$(echo "$OUTPUT" | jq --arg workspace "$workspace" --arg region "$region" --arg cluster "$cluster" --arg workdir "$workdir" \
-        ".\"$workdir\" += [{\"workspace\": \$workspace, \"region\": \$region, \"cluster\": \$cluster}]")
+        ".\"$workdir\" += [{\"workspace\": \$workspace, \"region\": \$region, \"cluster\": \$cluster, \"workdir\": \$workdir}]")
     done
   done
 done
