@@ -62,7 +62,7 @@ jobs:
           echo "matrix=$MATRIX_OUTPUT" >> "$GITHUB_OUTPUT"
 
   terraform:
-    if: ${{ needs.matrix.outputs.matrix != '{"include":[]}' && needs.matrix.outputs.matrix != '' && needs.matrix.outputs.matrix.workdir == 'infra'  }}
+    if: ${{ needs.matrix.outputs.matrix != '{"include":[]}' && needs.matrix.outputs.matrix != '' && needs.matrix.outputs.matrix.workdir == "infra"  }}
     name: "${{ matrix.workspace }}/${{ matrix.region }}/${{ matrix.cluster }}"
     needs: matrix
     runs-on: ubuntu-latest
