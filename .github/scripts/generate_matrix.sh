@@ -49,7 +49,7 @@ for paths in "${INPUT_LIST[@]}"; do
 done
 
 # Remove duplicates inside each array
-OUTPUT=$(echo "$OUTPUT" | jq 'to_entries | map(.value |= unique) | from_entries')
+OUTPUT=$(echo "$OUTPUT" | jq -c 'to_entries | map(.value |= unique) | from_entries')
 
 # Print final JSON
 echo "$OUTPUT"
