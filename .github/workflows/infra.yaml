@@ -26,9 +26,7 @@ concurrency:
 jobs:
   matrix:
     runs-on: ubuntu-latest
-#    outputs:
-#      matrix: ${{ steps.generate-matrix.outputs.matrix }}
-    uses: ./.github/workflows/generate-matrix.yml
+    uses: ./.github/workflows/generate_matrix.yaml
     with:
       manual_paths: ${{ github.event.inputs.manual_path }}
       filter: "infra"
