@@ -3,6 +3,9 @@
 # Ensure the script exits immediately if a command exits with a non-zero status
 set -e
 
+# Optional workdir filter (second argument)
+FILTER="$1"
+
 # Read environment variables
 INPUT_LIST=(${CHANGED_FILES})    # List of changed files from environment variables, converted to an array
 
@@ -34,6 +37,11 @@ for paths in "${INPUT_LIST[@]}"; do
     for folder in $SUBFOLDERS; do
       # Extract workspace, region, and cluster names by splitting the folder path
       IFS='/' read -r workspace region cluster workdir _ <<< "$folder"
+
+      # Apply workdir filter if provided
+      if [[ -n "$FILTER" && "$workdir" != "$FILTER" ]]; then
+        continue
+      fi
 
       # Append extracted values to the JSON output using jq
       OUTPUT=$(echo "$OUTPUT" | jq --arg workspace "$workspace" --arg region "$region" --arg cluster "$cluster" --arg workdir "$workdir" \

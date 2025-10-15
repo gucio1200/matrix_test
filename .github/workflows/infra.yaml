@@ -26,40 +26,17 @@ concurrency:
 jobs:
   matrix:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.generate-matrix.outputs.matrix }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@c3a1bb2c992d77180ae65be6ae6c166cf40f857c
-        with:
-          dir_names: true
-          files: |
-            **.tf
-            **.hcl
-            **.tfvars
-            !*/*/*/init/**
-
-      - name: List all changed files
-        run: echo '${{ steps.changed-files.outputs.all_modified_files }}'
-
-      - name: Generate Matrix
-        id: generate-matrix
-        run: |
-          CHANGED_FILES="${{ steps.changed-files.outputs.all_modified_files }}"
-          MANUAL_PATHS="${{ github.event.inputs.manual_path }}"
-
-          if [[ -n "$MANUAL_PATHS" ]]; then
-            echo "Manual paths provided: $MANUAL_PATHS"
-            CHANGED_FILES="${MANUAL_PATHS//,/ }"
-          fi
-
-          MATRIX_OUTPUT=$(CHANGED_FILES="$CHANGED_FILES" ./.github/scripts/generate_matrix.sh)
-          echo $MATRIX_OUTPUT
-          echo "matrix=$MATRIX_OUTPUT" >> "$GITHUB_OUTPUT"
+#    outputs:
+#      matrix: ${{ steps.generate-matrix.outputs.matrix }}
+    uses: ./.github/workflows/generate-matrix.yml
+    with:
+      manual_paths: ${{ github.event.inputs.manual_path }}
+      filter: "infra"
+      file_patterns: |
+        **.tf
+        **.hcl
+        **.tfvars
+        !*/*/*/init/**
 
   terraform:
     if: ${{ needs.matrix.outputs.matrix != '{"include":[]}' && needs.matrix.outputs.matrix != '' }}

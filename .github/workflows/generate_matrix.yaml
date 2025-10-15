@@ -1,0 +1,48 @@
+name: Generate Matrix
+on:
+  workflow_call:
+    inputs:
+      manual_paths:
+        required: false
+        type: string
+      file_patterns:
+        required: true
+        type: string
+      filter_workdir:
+        required: false
+        type: string
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.generate-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@c3a1bb2c992d77180ae65be6ae6c166cf40f857c
+        with:
+          dir_names: true
+          files: ${{ inputs.file_patterns }}
+
+      - name: List all changed files
+        run: echo '${{ steps.changed-files.outputs.all_modified_files }}'
+
+      - name: Generate Matrix
+        id: generate-matrix
+        run: |
+          CHANGED_FILES="${{ steps.changed-files.outputs.all_modified_files }}"
+          MANUAL_PATHS="${{ inputs.manual_paths }}"
+          FILTER="${{ inputs.filter_workdir }}"
+
+          if [[ -n "$MANUAL_PATHS" ]]; then
+            echo "Manual paths provided: $MANUAL_PATHS"
+            CHANGED_FILES="${MANUAL_PATHS//,/ }"
+          fi
+
+          MATRIX_OUTPUT=$(CHANGED_FILES="$CHANGED_FILES" ./.github/scripts/generate_matrix.sh "$FILTER" )
+          echo $MATRIX_OUTPUT
+          echo "matrix=$MATRIX_OUTPUT" >> "$GITHUB_OUTPUT"
