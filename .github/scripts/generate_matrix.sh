@@ -11,7 +11,7 @@ OUTPUT='{}'
 # Loop through each changed file path
 for paths in "${INPUT_LIST[@]}"; do
   # Support trigger on shared secrets change
-  if [[ "$paths" =~ ^([^/]+)/secrets ]]; then
+  if [[ "$paths" =~ ^(.+)/secrets ]]; then
     paths=$(find "${BASH_REMATCH[1]}" -type d -name "init" -printf '%h\n' 2>/dev/null || true)
   fi
 
