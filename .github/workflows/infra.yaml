@@ -61,7 +61,7 @@ jobs:
           echo "matrix=$MATRIX_OUTPUT" >> "$GITHUB_OUTPUT"
 
   terraform:
-    if: ${{ needs.matrix.outputs.matrix != '{"include":[]}' && needs.matrix.outputs.matrix != '' }}
+    if: ${{ needs.matrix.outputs.matrix != '{"include":[]}' && needs.matrix.outputs.matrix != '' && needs.matrix.outputs.matrix.workdir == 'infra'  }}
     name: "${{ matrix.workspace }}/${{ matrix.region }}/${{ matrix.cluster }}"
     needs: matrix
     strategy:
@@ -71,7 +71,14 @@ jobs:
     environment: "${{matrix.workspace}}-${{matrix.region}}-${{matrix.cluster}}"
     env:
       TF_WORKSPACE: "${{matrix.workspace}}-${{matrix.region}}-${{matrix.cluster}}"
-      WORK_DIR: "${{ matrix.workspace }}/${{ matrix.region }}/${{ matrix.cluster }}/infra"
+      WORK_DIR: "${{ matrix.workspace }}/${{ matrix.region }}/${{ matrix.cluster }}/${{ matrix.workdir }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Echo variables
+        run: |
+          echo "Workspace: ${{ matrix.workspace }}"
+          echo "Region: ${{ matrix.region }}"
+          echo "Cluster: ${{ matrix.cluster }}"
+          echo "Workdir: ${{ matrix.workdir }}"
