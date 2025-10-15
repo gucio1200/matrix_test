@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  generate_matrix:
+  matrix:
     uses: ./.github/workflows/generate_matrix.yaml
     with:
       manual_paths: ${{ github.event.inputs.manual_path }}
