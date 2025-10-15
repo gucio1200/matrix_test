@@ -1,0 +1,77 @@
+name: "Infra"
+
+on:
+  workflow_dispatch:
+    inputs:
+      manual_path:
+        description: 'Provided paths (comma-separated if multiple) without "/" at beggining.'
+        required: false
+
+  pull_request:
+    branches:
+      - '**'
+    paths-ignore:
+      - '*/*/*/init/**'
+
+  push:
+    branches:
+      - '**'
+    paths-ignore:
+      - '*/*/*/init/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  matrix:
+    outputs:
+      matrix: ${{ steps.generate-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@c3a1bb2c992d77180ae65be6ae6c166cf40f857c
+        with:
+          dir_names: true
+          files: |
+            **.tf
+            **.hcl
+            **.tfvars
+            !*/*/*/init/**
+
+      - name: List all changed files
+        run: echo '${{ steps.changed-files.outputs.all_modified_files }}'
+
+      - name: Generate Matrix
+        id: generate-matrix
+        run: |
+          CHANGED_FILES="${{ steps.changed-files.outputs.all_modified_files }}"
+          MANUAL_PATHS="${{ github.event.inputs.manual_path }}"
+
+          if [[ -n "$MANUAL_PATHS" ]]; then
+            echo "Manual paths provided: $MANUAL_PATHS"
+            CHANGED_FILES="${MANUAL_PATHS//,/ }"
+          fi
+
+          MATRIX_OUTPUT=$(CHANGED_FILES="$CHANGED_FILES" ./.github/scripts/generate_matrix.sh)
+          echo $MATRIX_OUTPUT
+          echo "matrix=$MATRIX_OUTPUT" >> "$GITHUB_OUTPUT"
+
+  terraform:
+    if: ${{ needs.matrix.outputs.matrix != '{"include":[]}' && needs.matrix.outputs.matrix != '' }}
+    name: "${{ matrix.workspace }}/${{ matrix.region }}/${{ matrix.cluster }}"
+    needs: matrix
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
+    environment: "${{matrix.workspace}}-${{matrix.region}}-${{matrix.cluster}}"
+    env:
+      TF_WORKSPACE: "${{matrix.workspace}}-${{matrix.region}}-${{matrix.cluster}}"
+      WORK_DIR: "${{ matrix.workspace }}/${{ matrix.region }}/${{ matrix.cluster }}/infra"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
