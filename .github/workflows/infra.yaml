@@ -35,14 +35,14 @@ jobs:
         !*/*/*/init/**
 
   terraform:
-    if: ${{ fromJson(needs.matrix.outputs.matrix).infra != '{"include":[]}' && fromJson(needs.matrix.outputs.matrix).infra != '' }}
+    if: ${{ fromJson(needs.matrix.outputs.matrix).init != '{"include":[]}' && fromJson(needs.matrix.outputs.matrix).init != '' }}
     name: "${{ matrix.workspace }}/${{ matrix.region }}/${{ matrix.cluster }}"
     needs: matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       max-parallel: 1
-      matrix: ${{ fromJson(needs.matrix.outputs.matrix).infra }}
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix).init }}
     environment: "${{matrix.workspace}}-${{matrix.region}}-${{matrix.cluster}}"
     env:
       TF_WORKSPACE: "${{matrix.workspace}}-${{matrix.region}}-${{matrix.cluster}}"
