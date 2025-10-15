@@ -2,9 +2,6 @@
 
 set -e
 
-# Optional workdir filter (second argument)
-FILTER="$1"
-
 # Read environment variables
 INPUT_LIST=(${CHANGED_FILES})    # List of changed files from environment variables
 
@@ -30,11 +27,6 @@ for paths in "${INPUT_LIST[@]}"; do
 
     for folder in $SUBFOLDERS; do
       IFS='/' read -r workspace region cluster workdir _ <<< "$folder"
-
-      # Apply workdir filter if provided
-      if [[ -n "$FILTER" && "$workdir" != "$FILTER" ]]; then
-        continue
-      fi
 
       # Initialize array for this workdir if not exists
       if ! echo "$OUTPUT" | jq -e ".\"$workdir\"" >/dev/null 2>&1; then

@@ -8,9 +8,6 @@ on:
       file_patterns:
         required: true
         type: string
-      filter:
-        required: false
-        type: string
     outputs:
       matrix:
         description: "Generated matrix JSON"
@@ -40,13 +37,12 @@ jobs:
         run: |
           CHANGED_FILES="${{ steps.changed-files.outputs.all_modified_files }}"
           MANUAL_PATHS="${{ inputs.manual_paths }}"
-          FILTER="${{ inputs.filter }}"
 
           if [[ -n "$MANUAL_PATHS" ]]; then
             echo "Manual paths provided: $MANUAL_PATHS"
             CHANGED_FILES="${MANUAL_PATHS//,/ }"
           fi
 
-          MATRIX_OUTPUT=$(CHANGED_FILES="$CHANGED_FILES" ./.github/scripts/generate_matrix.sh "$FILTER" )
+          MATRIX_OUTPUT=$(CHANGED_FILES="$CHANGED_FILES" ./.github/scripts/generate_matrix.sh )
           echo $MATRIX_OUTPUT
           echo "matrix=$MATRIX_OUTPUT" >> "$GITHUB_OUTPUT"
