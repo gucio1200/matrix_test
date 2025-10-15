@@ -25,6 +25,7 @@ concurrency:
 
 jobs:
   matrix:
+    runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.generate-matrix.outputs.matrix }}
     steps:
@@ -64,6 +65,7 @@ jobs:
     if: ${{ needs.matrix.outputs.matrix != '{"include":[]}' && needs.matrix.outputs.matrix != '' && needs.matrix.outputs.matrix.workdir == 'infra'  }}
     name: "${{ matrix.workspace }}/${{ matrix.region }}/${{ matrix.cluster }}"
     needs: matrix
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       max-parallel: 1
