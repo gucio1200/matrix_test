@@ -8,15 +8,17 @@ on:
       file_patterns:
         required: true
         type: string
-      filter_workdir:
+      filter:
         required: false
         type: string
+    outputs:
+      matrix:
+        description: "Generated matrix JSON"
+        value: ${{ steps.generate-matrix.outputs.matrix }}
 
 jobs:
   matrix:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.generate-matrix.outputs.matrix }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -36,7 +38,7 @@ jobs:
         run: |
           CHANGED_FILES="${{ steps.changed-files.outputs.all_modified_files }}"
           MANUAL_PATHS="${{ inputs.manual_paths }}"
-          FILTER="${{ inputs.filter_workdir }}"
+          FILTER="${{ inputs.filter }}"
 
           if [[ -n "$MANUAL_PATHS" ]]; then
             echo "Manual paths provided: $MANUAL_PATHS"
