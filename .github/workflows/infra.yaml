@@ -35,7 +35,7 @@ jobs:
         !*/*/*/init/**
 
   terraform:
-    if: ${{ needs.matrix.outputs.matrix != '{"include":[]}' && needs.matrix.outputs.matrix != '' }}
+    if: ${{ needs.matrix.outputs.matrix != '' }}
     name: "${{ matrix.workspace }}/${{ matrix.region }}/${{ matrix.cluster }}"
     needs: matrix
     runs-on: ubuntu-latest
