@@ -20,7 +20,7 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.generate-matrix.outputs.matrix }}  #
+      matrix: ${{ steps.generate-matrix.outputs.matrix }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
