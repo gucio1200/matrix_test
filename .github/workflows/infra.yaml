@@ -35,7 +35,7 @@ jobs:
         !*/*/*/init/**
 
   terraform:
-#    if: ${{ fromJson(needs.matrix.outputs.matrix).infra != [] }}
+    if: ${{ fromJson(needs.matrix.outputs.matrix).infra != [] }}
     name: "${{ matrix.workspace }}/${{ matrix.region }}/${{ matrix.cluster }}"
     needs: matrix
     runs-on: ubuntu-latest
