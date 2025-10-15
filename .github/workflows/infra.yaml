@@ -70,8 +70,6 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
-        exclude:
-          - workdir: ["init", "storage"]
     environment: "${{matrix.workspace}}-${{matrix.region}}-${{matrix.cluster}}"
     env:
       TF_WORKSPACE: "${{matrix.workspace}}-${{matrix.region}}-${{matrix.cluster}}"
